@@ -61,3 +61,45 @@ class Client(AbstractBaseUser):
     def __str__(self):
         return self.last_name
 
+
+class Medicament(models.Model):
+    nom = models.CharField(max_length=255)
+    prix = models.DecimalField(max_digits=10, decimal_places=2)
+    quantite = models.IntegerField()
+    types = models.CharField(max_length=255)
+    description = models.TextField()
+    image = models.ImageField(upload_to='img', blank=True)
+
+    def __str__(self):
+        return self.nom
+    
+
+class Pharmacien(AbstractBaseUser):
+     nom = models.CharField(max_length=255)
+     telephone = models.CharField(max_length=20)
+     adresse = models.TextField()
+     
+     objects = CustomAccountManager()
+     USERNAME_FIELD = 'telephone'
+     REQUIRED_FIELDS = ['nom', 'telephone', 'adresse']
+
+     def __str__(self):
+        return self.nom
+     
+
+class Pharmacie(models.Model):
+    pharmacien = models.ForeignKey(Pharmacien, on_delete=models.CASCADE)
+    nom = models.CharField(max_length=255)
+    adresse = models.TextField()
+    def __str__(self):
+        return self.nom
+    
+
+class Commande(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    medicament = models.ForeignKey(Medicament, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    quantite = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.medicament} - {self.client} - {self.date}"
